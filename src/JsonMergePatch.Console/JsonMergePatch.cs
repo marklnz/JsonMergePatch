@@ -14,21 +14,15 @@ namespace JsonMergePatch
 
         public static string Patch(string target, string patch)
         {
-            var options = new JsonReaderOptions
-            {
-                AllowTrailingCommas = true,
-                CommentHandling = JsonCommentHandling.Skip
-            };
-
             var targetDoc = JsonDocument.Parse(target);
             var patchDoc = JsonDocument.Parse(patch);
 
             return DoPatch(targetDoc.RootElement, patchDoc.RootElement);
         }
 
-        private static string DoPatch(JsonElement targetElement, JsonElement patchElement, string name = null)
+        private static string DoPatch(JsonElement targetElement, JsonElement patchElement)
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
 
             if (patchElement.ValueKind == JsonValueKind.Object)
             {
@@ -37,7 +31,7 @@ namespace JsonMergePatch
                     sb.Append("{}");
                 }
 
-                sb.Append("{");
+                sb.Append('{');
 
                 foreach (var property in patchElement.EnumerateObject())
                 {
@@ -47,7 +41,7 @@ namespace JsonMergePatch
                     // If the string so far is any longer than that then it means we've already written at least one property and we need to 
                     // add a comma as a separator
                     if (sb.Length > 1)
-                        sb.Append(",");
+                        sb.Append(',');
 
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
@@ -59,13 +53,13 @@ namespace JsonMergePatch
                     else
                     {
                         // Pass the current value of property, and the relevant target element to DoPatch
-                        var val = DoPatch(targetProp, patchElement.GetProperty(property.Name), property.Name);
+                        var val = DoPatch(targetProp, patchElement.GetProperty(property.Name));
                         // write val
-                        sb.Append($"\"{property.Name}\":{val}");
+                        sb.AppendFormat("\"{0}\":{1}", property.Name, val);
                     }
                 }
 
-                sb.Append("}");
+                sb.Append('}');
             }
             else
             {

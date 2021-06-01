@@ -1,15 +1,18 @@
 ﻿using System;
 using System.Text.Json;
+using System.Diagnostics.CodeAnalysis;
 
 namespace JsonMergePatch
 {
     public static class Program
     {
+        [SuppressMessage("Redundancy", "RCS1163", Justification = "args in Program.Main not currently used, but may be needed later")]
+        [SuppressMessage("Style", "IDE0060", Justification = "args in Program.Main not currently used, but may be needed later")]
         public static void Main(string[] args)
         {
             Console.WriteLine("JsonMergePatch console application");
 
-            // TODO: Create an instance of an object, which we will use to test the patcher...
+            // Create an instance of an object, which we will use to test the patcher...
             var test = new TestObject()
             {
                 Id = 1,
@@ -28,7 +31,7 @@ namespace JsonMergePatch
             Console.WriteLine($"Patch Object before patch application: {prePatchJson}");
             Console.WriteLine();
 
-            // TODO: Then create a patch json for it
+            // Then create a patch json for it
             var patch = new TestObject()
             {
                 Id = 2,
@@ -47,12 +50,11 @@ namespace JsonMergePatch
             Console.WriteLine($"Patch Json: {patchJson}");
             Console.WriteLine();
 
-            // TODO: Then run through the patcher.
+            // Then run through the patcher.
             var postPatchJson = JsonMergePatch.Patch(prePatchJson, patchJson);
+            var patched = JsonSerializer.Deserialize<TestObject>(postPatchJson);
 
-            TestObject patched = JsonSerializer.Deserialize<TestObject>(postPatchJson);
-
-            // TODO: Test that the changes worked.
+            // Test that the changes worked.
             //var postPatchJson = JsonSerializer.Serialize(test);
             Console.WriteLine($"Patch Object after patch application: {postPatchJson}");
             Console.WriteLine();
